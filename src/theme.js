@@ -1,6 +1,6 @@
 export const theme = {
   colors: {
-    bodyBgColor: '#d6bee7',
+    bodyBgColor: 'yellow',
     firstBgColor: '#5cb3ed',
     hoverBgColor: '#795ced',
     thirdDgColor: 'rgb(114, 185, 229)',

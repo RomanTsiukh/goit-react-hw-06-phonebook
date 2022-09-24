@@ -7,7 +7,15 @@ import { Section } from 'components/Section/Section';
 import ContactForm from './ContactForm/ContactForm';
 import ContactList from 'components/ContactList/ContactList';
 import Filter from 'components/Filter/Filter';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  addContact,
+  getContacts,
+  filterChange,
+  removeContact,
+  getFilterValue,
+} from 'redux/contactSlise';
 
 const Title = styled.h1`
   text-align: center;
@@ -18,15 +26,11 @@ const Title = styled.h1`
 `;
 
 export default function App() {
-  const [contacts, setContacts] = useState(
-    JSON.parse(localStorage.getItem('contacts')) ?? [
-      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-    ]
-  );
-  const [filter, setFilter] = useState('');
+  const items = useSelector(getContacts);
+  const dispatch = useDispatch();
+  const filterValueReducer = useSelector(getFilterValue);
+  const [contacts, setContacts] = useState(items);
+  const [filter, setFilter] = useState(filterValueReducer);
 
   const getVisibleContacts = () => {
     const normalizeFilter = filter.toLowerCase();
@@ -35,8 +39,10 @@ export default function App() {
     );
   };
 
-  const deleteContact = contactId =>
+  const deleteContact = contactId => {
+    dispatch(removeContact(contactId));
     setContacts(contacts.filter(contact => contact.id !== contactId));
+  };
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -52,16 +58,14 @@ export default function App() {
       ? alert(`Sorry, ${name} is already in your contacts`)
       : setContacts(() => [addedContact, ...contacts]);
 
+    dispatch(addContact(addedContact));
     e.target.reset();
   };
 
   const changeFilter = e => {
+    dispatch(filterChange(e.currentTarget.value));
     setFilter(e.currentTarget.value);
   };
-
-  useEffect(() => {
-    window.localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
 
   return (
     <Box
